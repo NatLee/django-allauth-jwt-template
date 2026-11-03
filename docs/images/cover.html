@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+  Source of cover.png (1280x640, GitHub's social preview size). Re-render with:
+  msedge --headless=new --disable-gpu --hide-scrollbars --window-size=1280,640 \
+         --screenshot=cover.png file:///<path>/docs/images/cover.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>django-allauth-jwt-template cover</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #eef0ff;
+    background:
+      radial-gradient(900px 500px at 85% 20%, rgb(124 58 237 / 28%), transparent 60%),
+      radial-gradient(700px 500px at 10% 100%, rgb(2 132 199 / 22%), transparent 60%),
+      linear-gradient(110deg, #10142a, #1d2152 60%, #241f55);
+    display: grid;
+    grid-template-columns: 610px 1fr;
+    gap: 40px;
+    padding: 64px 64px 56px 72px;
+  }
+  .mark {
+    width: 60px; height: 60px; border-radius: 16px;
+    background: linear-gradient(90deg, #fb7185 0 33%, #c4b5fd 33% 66%, #7dd3fc 66%);
+    box-shadow: inset 0 0 0 3px rgb(255 255 255 / 25%);
+    margin-bottom: 30px;
+  }
+  h1 { margin: 0; font-size: 58px; line-height: 1.05; letter-spacing: -0.02em; font-weight: 800; }
+  h1 .dim { color: #a5b4fc; }
+  p.lead { margin: 26px 0 0; font-size: 25px; line-height: 1.4; color: #c9cdf5; max-width: 560px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+  .chip {
+    font-size: 19px; padding: 8px 16px; border-radius: 999px;
+    background: rgb(255 255 255 / 8%); border: 1px solid rgb(255 255 255 / 16%); color: #e4e6ff;
+  }
+  .flow { display: flex; flex-direction: column; justify-content: center; gap: 0; }
+  .box {
+    border-radius: 16px; padding: 16px 20px;
+    background: rgb(255 255 255 / 7%); border: 1px solid rgb(255 255 255 / 15%);
+  }
+  .box .k { font-size: 15px; text-transform: uppercase; letter-spacing: 0.12em; color: #a5b4fc; }
+  .box .v { font-size: 23px; font-weight: 600; margin-top: 4px; }
+  .box code { font-family: "Cascadia Code", Consolas, monospace; font-size: 18px; color: #c9cdf5; }
+  .arrow { height: 34px; display: grid; place-items: center; color: #8b84ff; font-size: 26px; line-height: 1; }
+  .jwt {
+    font-family: "Cascadia Code", Consolas, monospace; font-size: 17px; line-height: 1.45;
+    word-break: break-all; margin-top: 8px;
+  }
+  .j0 { color: #fb7185; } .j1 { color: #c4b5fd; } .j2 { color: #7dd3fc; }
+  .accent { border-color: rgb(196 181 253 / 55%); background: rgb(124 58 237 / 16%); }
+</style>
+</head>
+<body>
+  <section>
+    <div class="mark"></div>
+    <h1>django-allauth<br><span class="dim">-jwt-template</span></h1>
+    <p class="lead">Sign-up, Google / Microsoft / LINE login and JWTs, all from django-allauth's own headless API.</p>
+    <div class="chips">
+      <span class="chip">Django 5.2 LTS</span>
+      <span class="chip">allauth headless</span>
+      <span class="chip">refresh &amp; real logout</span>
+      <span class="chip">docker compose</span>
+    </div>
+  </section>
+  <section class="flow">
+    <div class="box">
+      <div class="k">your SPA or app</div>
+      <div class="v">sign up · log in · Google</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box">
+      <div class="k">allauth headless</div>
+      <div class="v"><code>/_allauth/app/v1/auth/login</code></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box accent">
+      <div class="k">access + refresh JWT</div>
+      <div class="jwt"><span class="j0">eyJhbGciOiJIUzI1NiJ9</span>.<span class="j1">eyJzdWIiOiI0MiIsInRva2VuX3VzZSI6ImFjY2VzcyJ9</span>.<span class="j2">8vBf0Kq3rQ…</span></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box">
+      <div class="k">your API</div>
+      <div class="v"><code>Authorization: Bearer …</code></div>
+    </div>
+  </section>
+</body>
+</html>
