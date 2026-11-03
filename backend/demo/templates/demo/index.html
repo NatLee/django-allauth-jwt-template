@@ -1,0 +1,153 @@
+{% extends "demo/base.html" %}
+{% load static %}
+
+{% block head %}
+  {{ config|json_script:"playground-config" }}
+  <script src="{% static 'demo/app.js' %}" defer></script>
+{% endblock %}
+
+{% block nav %}
+  <a href="{{ config.links.allauthSpec }}">allauth API</a>
+  <a href="{{ config.links.apiDocs }}" title="Staff only: log in at /admin/ first">Your API docs</a>
+  <a href="{{ config.links.admin }}">Admin</a>
+{% endblock %}
+
+{% block main %}
+  <section class="status" aria-label="Status">
+    <span class="pill" id="session-pill"><span class="dot"></span><span class="text">Checking session…</span></span>
+    <span class="pill" id="token-pill"><span class="dot"></span><span class="text">No access token</span></span>
+  </section>
+
+  <div class="notice" id="notice" role="status" hidden>
+    <span class="text"></span>
+    <button type="button" class="close" aria-label="Dismiss">&times;</button>
+  </div>
+
+  <div class="grid">
+    <section class="card" id="auth-card" aria-live="polite">
+      <p class="muted">Loading…</p>
+    </section>
+
+    <section class="card" id="token-card">
+      <div class="card-head">
+        <h2>Tokens</h2>
+        <span class="tag">allauth JWTTokenStrategy</span>
+      </div>
+      <div id="token-empty">
+        <p class="muted">Sign in and the page asks for a JWT pair. Your API takes the access token as
+          <code>Authorization: Bearer …</code>.</p>
+      </div>
+      <div id="token-view" hidden>
+        <dl class="claims">
+          <div><dt>user (sub)</dt><dd id="claim-sub"></dd></div>
+          <div><dt>issued</dt><dd id="claim-iat"></dd></div>
+          <div><dt>expires</dt><dd id="claim-exp"></dd></div>
+          <div><dt>token id (jti)</dt><dd id="claim-jti"></dd></div>
+        </dl>
+        <p class="label">Access token</p>
+        <pre class="jwt" id="access-token" tabindex="0"></pre>
+        <p class="label">Refresh token</p>
+        <pre class="jwt jwt-short" id="refresh-token" tabindex="0"></pre>
+        <div class="actions">
+          <button type="button" class="btn primary" id="call-api">GET /api/me</button>
+          <button type="button" class="btn" id="refresh">Refresh tokens</button>
+        </div>
+        <pre class="result" id="api-result" hidden></pre>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Requests</h2>
+      <button type="button" class="btn small ghost" id="clear-log">Clear</button>
+    </div>
+    <ol class="log" id="log"></ol>
+  </section>
+
+  {# Views for the left card; app.js picks one and fills it in. #}
+  <template id="view-signed-out">
+    <div class="card-head"><h2>Sign in</h2></div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-mode="login" aria-selected="true">Log in</button>
+      <button type="button" role="tab" data-mode="signup" aria-selected="false">Create account</button>
+    </div>
+    <form class="stack" data-form="credentials">
+      <label>Email <input type="email" name="email" autocomplete="email" required></label>
+      <label>Password <input type="password" name="password" autocomplete="current-password" required minlength="8"></label>
+      <button type="submit" class="btn primary wide" data-submit>Log in</button>
+      <a class="small-link" data-route="account_reset_password">Forgot your password?</a>
+    </form>
+    <div class="providers-block" hidden>
+      <p class="divider"><span>or continue with</span></p>
+      <div class="providers" data-providers="login"></div>
+    </div>
+    <p class="hint" data-no-providers hidden>No third-party login is set up. Set <code>GOOGLE_CLIENT_ID</code>,
+      <code>MS_CLIENT_ID</code> or <code>LINE_CLIENT_ID</code> in <code>.env</code>, or try the fake one with
+      <code>ENABLE_DUMMY_PROVIDER=true</code>.</p>
+  </template>
+
+  <template id="view-signed-in">
+    <div class="card-head">
+      <h2>Account</h2>
+      <button type="button" class="btn small" data-action="logout">Log out</button>
+    </div>
+    <div class="who">
+      <div class="avatar" data-initial></div>
+      <div>
+        <div class="who-name" data-email></div>
+        <div class="muted small" data-verified></div>
+      </div>
+    </div>
+    <h3>Linked accounts</h3>
+    <ul class="linked" data-linked></ul>
+    <p class="muted small" data-none-linked hidden>No third-party account linked yet.</p>
+    <div class="providers-block" hidden>
+      <h3>Link another account</h3>
+      <div class="providers" data-providers="connect"></div>
+    </div>
+  </template>
+
+  <template id="view-provider-signup">
+    <div class="card-head"><h2>One more step</h2></div>
+    <p data-intro></p>
+    <form class="stack" data-form="provider-signup">
+      <label>Email <input type="email" name="email" autocomplete="email" required></label>
+      <button type="submit" class="btn primary wide">Create account</button>
+    </form>
+  </template>
+
+  <template id="view-reset-request">
+    <div class="card-head"><h2>Reset your password</h2></div>
+    <p class="muted">We email you a link. In development the email is printed in the server log.</p>
+    <form class="stack" data-form="reset-request">
+      <label>Email <input type="email" name="email" autocomplete="email" required></label>
+      <button type="submit" class="btn primary wide">Send the link</button>
+      <a class="small-link" data-route="home">Back to sign in</a>
+    </form>
+  </template>
+
+  <template id="view-reset-key">
+    <div class="card-head"><h2>Choose a new password</h2></div>
+    <form class="stack" data-form="reset-key">
+      <label>New password <input type="password" name="password" autocomplete="new-password" required minlength="8"></label>
+      <button type="submit" class="btn primary wide">Save and sign in</button>
+    </form>
+  </template>
+
+  <template id="view-busy">
+    <p class="muted" data-message>Working…</p>
+  </template>
+
+  <template id="provider-button">
+    <button type="button" class="btn provider"><span class="provider-mark"></span><span class="provider-name"></span></button>
+  </template>
+
+  <template id="linked-account">
+    <li>
+      <span class="provider-mark"></span>
+      <span class="linked-text"><strong class="provider-name"></strong> <span class="muted small account-name"></span></span>
+      <button type="button" class="btn small ghost danger">Unlink</button>
+    </li>
+  </template>
+{% endblock %}

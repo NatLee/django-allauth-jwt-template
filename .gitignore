@@ -1,12 +1,18 @@
-
-*/.env
-
+# Local settings and data
+.env
 *.sqlite3
+backend/staticfiles/
 
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Editors and OS
+.vscode/
+.idea/
 desktop.ini
 .DS_Store
-
-__pycache__
-
-logs
-
+logs/

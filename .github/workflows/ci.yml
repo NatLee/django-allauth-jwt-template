@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: pytest (Python ${{ matrix.python }}, Django ${{ matrix.django }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13", "3.14"]
+        django: ["5.2"]
+        include:
+          # A heads-up for the next upgrade: the newest Django release.
+          - python: "3.14"
+            django: "6.1"
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DJANGO_SECRET_KEY: ci-only-secret-key-that-is-long-enough-for-hs256
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - name: Install
+        run: |
+          pip install -r requirements-dev.txt
+          if [ "${{ matrix.django }}" != "5.2" ]; then pip install "Django~=${{ matrix.django }}.0"; fi
+          python -m django --version
+      - name: Django checks
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+      - name: Tests
+        run: python -m pytest
+
+  compose:
+    name: docker compose + curl walkthrough
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Start the stack the way the README does
+        run: |
+          cp .env.example .env
+          docker compose up --detach --build --wait
+      - name: Demo page
+        run: curl --fail --silent --show-error http://localhost:5566/ | grep -q playground-config
+      - name: Walk the token lifecycle with curl
+        run: bash examples/walkthrough.sh
+      - name: Server log
+        if: always()
+        run: docker compose logs
+      - name: Stop
+        if: always()
+        run: docker compose down --volumes

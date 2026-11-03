@@ -1,0 +1,22 @@
+# Local development: Django's runserver with auto-reload.
+#   cp .env.example .env && docker compose up
+# then open http://localhost:5566
+services:
+  api:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      PORT: ${PORT:-5566}
+    ports:
+      - "${PORT:-5566}:${PORT:-5566}"
+    volumes:
+      # Edit the code on your machine; runserver reloads on save.
+      - ./backend:/app
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request as u; u.urlopen('http://localhost:$${PORT}/_allauth/browser/v1/config')\""]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
