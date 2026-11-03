@@ -79,9 +79,7 @@ def google_redirect_login(client, google, email, sub="1001", process="login"):
         GOOGLE_TOKEN_URL,
         json={"access_token": "google-access", "expires_in": 3600, "id_token": id_token},
     )
-    back = client.get(
-        reverse("google_callback"), {"code": "google-auth-code", "state": state}
-    )
+    back = client.get(reverse("google_callback"), {"code": "google-auth-code", "state": state})
     assert back.status_code == 302
     landed = urlsplit(back["Location"])
     assert landed.path == CALLBACK
@@ -234,8 +232,11 @@ class TestProviderToken:
     def post_token(self, client, id_token):
         return client.post(
             reverse("headless:app:socialaccount:provider_token"),
-            {"provider": "google", "process": "login",
-             "token": {"client_id": CLIENT_ID, "id_token": id_token}},
+            {
+                "provider": "google",
+                "process": "login",
+                "token": {"client_id": CLIENT_ID, "id_token": id_token},
+            },
             content_type="application/json",
         )
 

@@ -96,4 +96,3 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if sociallogin.email_addresses:
             return sociallogin.email_addresses[0].email
         return ""
-

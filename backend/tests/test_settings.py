@@ -85,7 +85,9 @@ class TestFromEnvironment:
             load_settings(DJANGO_DEBUG="false")
         assert load_settings(DJANGO_DEBUG="true")["SECRET_KEY"]
 
-    @pytest.mark.parametrize("name, value", [("DJANGO_DEBUG", "maybe"), ("JWT_ACCESS_TOKEN_LIFETIME", "5m")])
+    @pytest.mark.parametrize(
+        "name, value", [("DJANGO_DEBUG", "maybe"), ("JWT_ACCESS_TOKEN_LIFETIME", "5m")]
+    )
     def test_unreadable_values_stop_the_start(self, load_settings, name, value):
         with pytest.raises(ImproperlyConfigured, match=name):
             load_settings(**{name: value})
@@ -132,7 +134,8 @@ class TestDemoPage:
         assert config["routes"]["socialaccount_login_error"] == "/account/provider/callback"
 
     @pytest.mark.parametrize(
-        "path", ["/account/verify-email/abc", "/account/password/reset", "/account/provider/callback"]
+        "path",
+        ["/account/verify-email/abc", "/account/password/reset", "/account/provider/callback"],
     )
     def test_page_answers_on_the_paths_allauth_links_to(self, client, path):
         assert client.get(path).status_code == 200
