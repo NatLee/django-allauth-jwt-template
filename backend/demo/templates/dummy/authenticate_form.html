@@ -1,0 +1,37 @@
+{% extends "demo/base.html" %}
+{% comment %}
+  The page allauth's dummy provider shows instead of a real Google/LINE screen
+  (only with ENABLE_DUMMY_PROVIDER=true). Styled like the demo page.
+{% endcomment %}
+
+{% block title %}Dummy provider · allauth + JWT playground{% endblock %}
+
+{% block main %}
+  <section class="card narrow">
+    <div class="card-head">
+      <h2>Dummy provider</h2>
+      <span class="tag warn">development only</span>
+    </div>
+    <p class="muted">Pretend to be anyone. A real provider would show its own login page here and send
+      these details back.</p>
+    <form class="stack" method="post" action="{{ action_url }}">
+      {% csrf_token %}
+      {% for field in form %}
+        {% if field.field.widget.input_type == "checkbox" %}
+          <label class="check">{{ field }} {{ field.label }}</label>
+        {% else %}
+          <label>{{ field.label }}{{ field }}</label>
+        {% endif %}
+        {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+      {% endfor %}
+      <div class="actions">
+        <button type="submit" class="btn primary">Log in</button>
+        <button type="submit" class="btn" form="cancel-form">Cancel</button>
+      </div>
+    </form>
+    <form id="cancel-form" method="post" action="{{ action_url }}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="cancel">
+    </form>
+  </section>
+{% endblock %}

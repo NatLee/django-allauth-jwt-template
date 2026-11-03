@@ -1,0 +1,13 @@
+# Django 5.2 is the current LTS release (security fixes until April 2028).
+Django>=5.2.19,<5.3
+
+# allauth does the accounts, the social logins, the JSON API (headless) and the JWTs.
+#   socialaccount  -> Google / Microsoft / LINE logins
+#   headless       -> the /_allauth/ JSON API and its JWT token strategy
+#   headless-spec  -> the OpenAPI spec at /_allauth/openapi.html
+django-allauth[socialaccount,headless,headless-spec]>=65.21.1,<66
+
+djangorestframework>=3.18.3,<3.19
+drf-spectacular>=0.30.0,<0.31
+django-cors-headers>=4.9.0,<5
+python-dotenv>=1.2.1,<2
