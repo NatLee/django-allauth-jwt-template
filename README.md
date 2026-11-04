@@ -371,3 +371,7 @@ backend/
 examples/walkthrough.sh   the curl walkthrough
 docs/images/              cover.png (from cover.html) and the screenshot
 ```
+
+## License
+
+The template itself is licensed under [Apache-2.0](LICENSE). What you build on top of it is yours to license however you like.
